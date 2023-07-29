@@ -29,7 +29,13 @@ new_data.rename(index = {0:'lot 2',1:'lot 3'},inplace=True)
 new_data['predicted price'] = reg.predict(new_data)
 print(new_data)
 
-
+# regression line
+plt.scatter(x,y)
+yhat = 101912.6 + data['size']*223.17874259
+fig = plt.plot(data['size'],yhat,lw = 2,c = 'green')
+plt.xlabel('Size',fontsize = 20)
+plt.ylabel('Price',fontsize = 20)
+print(plt.show())
 
 
 
