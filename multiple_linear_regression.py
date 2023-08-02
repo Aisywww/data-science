@@ -28,4 +28,20 @@ print(f'\nR square : {reg.score(x1,y)}\nCoeff : {reg.coef_}\nConst : {reg.interc
 r2 = reg.score(x1,y)
 n = 84
 p = 2
-print(f'\nAdjst R square :{1 - (1-r2) * (n-1)/(n-p-1)}')
+pv = 1 - (1-r2) * (n-1)/(n-p-1)
+print(f'\nAdjst R square :{pv}')
+
+# import f regression from Feature selection
+
+from sklearn.feature_selection import f_regression
+
+data_summary = f_regression(x1,y)
+print(f'{data_summary[1].round(3)}\n')
+
+#RESULT SHOWN THAT P VALUE OF RAND 123 IS > 0.05 WHICH IS NOT SIGNIFICANT thus this var can be removed
+# making summary table
+
+table_summary = pd.DataFrame(data = x1.columns.values,columns = ['Features'])
+table_summary['Const'] = reg.coef_
+table_summary['p_value'] = data_summary[1].round(3)
+print(table_summary)
