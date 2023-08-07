@@ -35,13 +35,58 @@ data2 = data1[data1['Mileage']<q]
 
 data3 = data2[data2['EngineV']<6.5]
 sns.distplot(data3['EngineV'])
-print(plt.show())
+#print(plt.show())
 
 q = data3['Year'].quantile(0.01)
 data4 = data3[data3['Year']>q]
 sns.distplot(data4['Year'])
-plt.show()
+#plt.show()
 
+# reset old index and replaced with new one 
 data_cleaned = data4.reset_index(drop=True)
 print(data_cleaned.describe(include='all'))
+
+#checkin ols assumption
+
+f , (ax1,ax2,ax3) = plt.subplots(1,3,sharey = True)
+ax1.scatter(data_cleaned['Mileage'],data_cleaned["Price"])
+ax1.set_title('Price and Mileage')
+ax2.scatter(data_cleaned["Year"],data_cleaned['Price'])
+ax2.set_title('Price and Year')
+ax3.scatter(data_cleaned['EngineV'],data_cleaned['Price'])
+ax3.set_title("Price and EngineV")
+
+
+#result showh that graph is exponential thus to make regression we need to transform it to linear
+#by using log transformation we can transform exponential graph(scatter plot) to linear 
+
+#undergo log transformation
+log_price = np.log(data_cleaned['Price'])
+data_cleaned['Log Price'] = log_price
+
+
+f , (ax1,ax2,ax3) = plt.subplots(1,3,sharey = True)
+ax1.scatter(data_cleaned['Mileage'],data_cleaned["Log Price"])
+ax1.set_title('Price and Mileage')
+ax2.scatter(data_cleaned["Year"],data_cleaned['Log Price'])
+ax2.set_title('Price and Year')
+ax3.scatter(data_cleaned['EngineV'],data_cleaned['Log Price'])
+ax3.set_title("Price and EngineV")
+
+plt.show()
+
+# want to check Multicolinearity
+
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+
+variables = data_cleaned[['Mileage','EngineV','Year']]
+vif = pd.DataFrame()
+vif['Vif'] = [variance_inflation_factor(variables.values,i) for i in range(variables.shape[1])]
+vif['features'] = variables.columns
+print('\n',vif)
+
+# since year vif point is too high which > 10 we drop the collumn of year from our table
+
+data_no_multicolinearity = data_cleaned.drop(['Year'],axis = 1)
+print(data_no_multicolinearity)
 
