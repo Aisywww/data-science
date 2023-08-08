@@ -32,6 +32,7 @@ print(data1.describe())
 
 q = data1['Mileage'].quantile(0.99)
 data2 = data1[data1['Mileage']<q]
+sns.distplot(data2['Mileage'])
 
 data3 = data2[data2['EngineV']<6.5]
 sns.distplot(data3['EngineV'])
@@ -88,5 +89,20 @@ print('\n',vif)
 # since year vif point is too high which > 10 we drop the collumn of year from our table
 
 data_no_multicolinearity = data_cleaned.drop(['Year'],axis = 1)
-print(data_no_multicolinearity)
+print(data_no_multicolinearity.head())
 
+# doing dummies to categorical data
+
+data_with_dummmies = pd.get_dummies(data_no_multicolinearity,drop_first= True)
+print(data_with_dummmies)
+
+#Rearrange Data
+print(data_with_dummmies.columns.values)
+cols = ['Log Price','Mileage', 'EngineV',  'Brand_BMW', 'Brand_Mercedes-Benz'
+ ,'Brand_Mitsubishi' ,'Brand_Renault', 'Brand_Toyota' ,'Brand_Volkswagen'
+, 'Body_hatch', 'Body_other' ,'Body_sedan', 'Body_vagon', 'Body_van'
+ ,'Engine Type_Gas', 'Engine Type_Other', 'Engine Type_Petrol'
+, 'Registration_yes']
+
+data_preprocess = data_with_dummmies[cols]
+print('\n\n\n',data_preprocess.head())
