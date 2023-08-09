@@ -91,7 +91,7 @@ print('\n',vif)
 data_no_multicolinearity = data_cleaned.drop(['Year'],axis = 1)
 print(data_no_multicolinearity.head())
 
-# doing dummies to categorical data
+# doing dummies to categorical data and drop first collumn to prevent multicollinear/correlated
 
 data_with_dummmies = pd.get_dummies(data_no_multicolinearity,drop_first= True)
 print(data_with_dummmies)
@@ -106,3 +106,85 @@ cols = ['Log Price','Mileage', 'EngineV',  'Brand_BMW', 'Brand_Mercedes-Benz'
 
 data_preprocess = data_with_dummmies[cols]
 print('\n\n\n',data_preprocess.head())
+
+# Standardize the data using sklearn
+
+targets = data_preprocess["Log Price"]
+inputs = data_preprocess.drop(['Log Price'],axis = 1)
+
+from sklearn.preprocessing import StandardScaler 
+
+scale = StandardScaler()
+scale.fit(inputs)
+
+inputs_scaled = scale.transform(inputs)
+
+# Doing Train Test Split
+
+from sklearn.model_selection import train_test_split
+
+x_train,x_test,y_train,y_test = train_test_split(inputs_scaled,targets,test_size = 0.2,random_state = 365)
+
+
+
+reg = LinearRegression()
+reg.fit(x_train,y_train)
+
+yhat = reg.predict(x_train)
+
+plt.scatter(y_train,yhat,alpha=0.2)
+plt.xlabel('y_train',size = 10)
+plt.ylabel('y_hat',size = 10 )
+plt.show()
+
+
+# checking residuals(detected that predicted price is more than observed this indicate that our model might overestimate the price whem predict)
+
+sns.displot(y_train - yhat)
+plt.title("Residuals",size = 18)
+plt.show()
+
+# r score 
+
+r2 = reg.score(x_train,y_train)
+print(r2)
+
+#weight/coeff for inputs
+
+inputs_coeff = reg.coef_
+inputs_intercept =  reg.intercept_
+print(f'{inputs_coeff}\n\n{inputs_intercept}')
+
+#making weight table for each variables
+database_weight = pd.DataFrame(inputs.columns.values,columns=['Features'])
+database_weight['weights'] = inputs_coeff
+print(database_weight)
+
+#testing our model
+
+y_hat_test = reg.predict(x_test)
+
+plt.scatter(y_hat_test,y_test,alpha=0.2)
+plt.xlabel('y_test',size = 18)
+plt.ylabel('y_hat_test',size = 18)
+plt.show()
+
+# we see the sctter plot above that for low price we might overpridict since the most data  is quite far from predicted
+# reset index due to pandas want to math with original index
+y_test = y_test.reset_index(drop = True)
+
+df_performance = pd.DataFrame(np.exp(y_hat_test),columns= ['prediction'])
+df_performance['Targets'] = np.exp(y_test)
+print(df_performance.head())
+
+# making our final summary table
+
+df_performance['residual'] =df_performance['Targets'] - df_performance['prediction'] 
+df_performance['Diffrence%'] = np.absolute(df_performance['residual']/df_performance['Targets']*100)
+pd.options.display.max_rows = 999
+pd.set_option('display.float.format',lambda x:'%.2f' % x)
+
+
+print(df_performance.sort_values(by = ['Diffrence%']),'\n\n',df_performance.describe())
+
+
