@@ -164,7 +164,7 @@ print(database_weight)
 
 y_hat_test = reg.predict(x_test)
 
-plt.scatter(y_hat_test,y_test,alpha=0.2)
+plt.scatter(y_test,y_hat_test,alpha=0.2)
 plt.xlabel('y_test',size = 18)
 plt.ylabel('y_hat_test',size = 18)
 plt.show()
