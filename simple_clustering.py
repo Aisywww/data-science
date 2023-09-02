@@ -20,10 +20,10 @@ plt.show()
 #select features
 
 x = data.iloc[:,1:] #iloc method slices data frame
-print(x.head())
+print('haha',x.head())
 
 #clustering
-kmeans = KMeans(7,random_state=False)
+kmeans = KMeans(4,random_state=False)
 identified_cluster = kmeans.fit_predict(x)
 print(identified_cluster)
 
@@ -36,3 +36,31 @@ plt.xlim(-180,180)
 plt.ylim(-90,90)
 plt.show()
 
+print(kmeans.inertia_)
+
+wcss = []
+
+for i in range(1,10):
+    kmeans = KMeans(i,random_state=False)
+    kmeans.fit(x)
+    wcss_iter = kmeans.inertia_
+    wcss.append(wcss_iter)
+
+print(wcss)
+
+number_cluster = range(1,10)
+plt.plot(number_cluster,wcss)
+plt.xlabel('number of cluster',size = 18)
+plt.ylabel('wcss',size = 18)
+plt.title('Elbow Method')
+plt.show()   # we can see that 2,3 best point that not tooo near with zero
+
+kmeans = KMeans(3,random_state=False)
+identified_cluster = kmeans.fit_predict(x)
+data_with_clusters = data.copy()
+data_with_clusters['Cluster'] = identified_cluster
+
+plt.scatter(data['Longitude'],data['Latitude'], c = data_with_clusters['Cluster'],cmap = 'rainbow')
+plt.xlim(-180,180)
+plt.ylim(-90,90)
+plt.show()
