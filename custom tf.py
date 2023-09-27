@@ -32,8 +32,8 @@ model = tf.keras.Sequential([
                                                 )
                             ])
 
-custom_optimizer = tf.keras.optimizers.SGD(learning_rate = 0.02)
-model.compile(optimizer='sgd',loss= 'mean_squared_error') # sgd mean Stophicated gradient descent
+custom_optimizer = tf.keras.optimizers.SGD(learning_rate = 2)
+model.compile(optimizer=custom_optimizer,loss= 'mean_squared_error') # sgd mean Stophicated gradient descent
 
 model.fit(training_data['inputs'],training_data['targets'],epochs=100,verbose=1)
 
@@ -43,6 +43,7 @@ print(model.layers[0].get_weights()) # to get coeeff for weights and bias
 
 weight = model.layers[0].get_weights()[0]
 bias = model.layers[0].get_weights()[1]
+
 
 #predicting value
 
@@ -55,4 +56,4 @@ plt.xlabel('Predicted Value')
 plt.ylabel('Targets')
 plt.show()
 
-
+print(weight,bias)
